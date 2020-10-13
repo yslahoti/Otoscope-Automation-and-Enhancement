@@ -1,10 +1,10 @@
 # Otoscope Automation and Enhancement
 Classification and enhancement of timpanic membrane images. 
 
-# Data Enhancement
+## Data Enhancement
 
-# Data Augmentation
+## Data Augmentation
 
-# Classifier
+## Classifier
 
-# Test Data
+## Test Data
