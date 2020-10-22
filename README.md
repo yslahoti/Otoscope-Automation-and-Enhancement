@@ -1,5 +1,5 @@
 # Otoscope Automation and Enhancement
-Classification and enhancement of timpanic membrane images. 
+Classification and enhancement of tympanic membrane images. 
 
 ## Data Enhancement
 
