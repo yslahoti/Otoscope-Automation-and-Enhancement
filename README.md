@@ -1,6 +1,13 @@
 # Otoscope Automation and Enhancement
 Classification and enhancement of tympanic membrane images. 
 
+## Dataset Features
+ Normal: 1778
+ Abnormal:1878
+ 
+ Total: 3656
+
+
 ## Data Enhancement
 
 ## Data Augmentation
