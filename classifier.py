@@ -20,17 +20,19 @@ import os
 
 transformations = transforms.Compose([
     transforms.Resize(255),
-    #transforms.CenterCrop(224),
+    transforms.CenterCrop(224),
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomRotation(20,resample= Image.BILINEAR),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
-train_set = datasets.ImageFolder(r"C:\Users\nmahe\Documents\Senior Year Fall\BE 495\Datos\Training-validation", transform = transformations)
+train_set = datasets.ImageFolder(r"C:\Users\nmahe\Documents\Senior Year Fall\BE 495\OtoscopeImages\Training", transform = transformations)
 
-test_set = datasets.ImageFolder(r"C:\Users\nmahe\Documents\Senior Year Fall\BE 495\Datos\NewTest", transform = transformations)
+test_set = datasets.ImageFolder(r"C:\Users\nmahe\Documents\Senior Year Fall\BE 495\OtoscopeImages\Testing", transform = transformations)
 
-train_loader = torch.utils.data.DataLoader(train_set, batch_size=200, shuffle=True)
-test_loader = torch.utils.data.DataLoader(test_set, batch_size=2, shuffle=False)
+train_loader = torch.utils.data.DataLoader(train_set, batch_size=300, shuffle=True)
+test_loader = torch.utils.data.DataLoader(test_set, batch_size=20, shuffle=True)
 
 trainimages, trainlabels = next(iter(train_loader))
 testimages, testlabels = next(iter(test_loader))
@@ -48,8 +50,9 @@ class CNN(nn.Module):
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=10, kernel_size=3)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=3)
         self.conv2_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(84320, 1024)
-        self.fc2 = nn.Linear(1024, 4)
+        self.fc1 = nn.Linear(58320, 512)
+        self.fc2 = nn.Linear(512, 16)
+        self.fc3 = nn.Linear(16,2)
         self.soft = nn.Softmax(dim = 1)
 
     def forward(self, x):
@@ -59,6 +62,7 @@ class CNN(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
+        x = self.fc3(F.relu(x))
         x = self.soft(x)
         return x
     
@@ -94,7 +98,7 @@ for epoch in range(1, num_epochs + 1):
         optimizer.step()
         # update-training-loss
         train_loss += loss.item() * data.size(0)
-    """    
+        
     # validate-the-model
     model.eval()
     for data, target in test_loader:
@@ -108,15 +112,15 @@ for epoch in range(1, num_epochs + 1):
         
         # update-average-validation-loss 
         valid_loss += loss.item() * data.size(0)
-    """
+    
     # calculate-average-losses
     train_loss = train_loss/len(train_loader.sampler)
-    #valid_loss = valid_loss/len(test_loader.sampler)
+    valid_loss = valid_loss/len(test_loader.sampler)
     train_losses.append(train_loss)
-    #valid_losses.append(valid_loss)
+    valid_losses.append(valid_loss)
         
     # print-training/validation-statistics 
-    #print('Epoch: {} \tTraining Loss: {:.6f} \tValidation Loss: {:.6f}'.format(epoch, train_loss, valid_loss))
+    print('Epoch: {} \tTraining Loss: {:.6f} \tValidation Loss: {:.6f}'.format(epoch, train_loss, valid_loss))
     
-    print('Epoch: {} \tTraining Loss: {:.6f}'.format(
-        epoch, train_loss))
+    #print('Epoch: {} \tTraining Loss: {:.6f}'.format(
+    #    epoch, train_loss))
